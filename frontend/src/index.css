@@ -1,0 +1,10 @@
+.align-left {
+  display: flex;
+  font-size: large;
+  float: left;
+}
+
+.align-right {
+  justify-self: flex-end;
+  align-self: flex-end;
+}
