@@ -8,23 +8,10 @@ import RedirectToHome from "./RedirectToHome";
 const AdminRoute = ({ children, ...rest }) => {
   const dispatch = useDispatch();
 
-  const userInfo = useSelector((state) => state.userInfo);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
 
-  useEffect(() => {
-    try {
-      if (userInfo && userInfo.userInfo.token) {
-        dispatch(getCurrentAdminUser(userInfo.userInfo.token));
-        setIsAdmin(true);
-      }
-    } catch (error) {
-      setIsAdmin(false);
-      console.log(error.message);
-      toast.error(error.message);
-    }
-  }, [userInfo]);
-
-  return isAdmin ? (
+  return userInfo && userInfo.role === "admin" ? (
     <Route {...rest} />
   ) : (
     <div>

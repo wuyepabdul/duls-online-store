@@ -1,65 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { toast } from "react-toastify";
-import { auth, googleAuthProvider } from "../../firebase";
-import { loadingButton } from "../../helpers/loading";
-import { createOrUpdateUser } from "../../redux/actions/userActions";
+import { loadingButton, loadingSpinner } from "../../helpers/loading";
+import { errorMessage } from "../../helpers/message";
+import { loginAction } from "../../redux/actions/userActions";
 
 const Login = ({ history }) => {
+  let intendedPage = history.location.state;
+
   const dispatch = useDispatch();
-  //component state
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  // user info from store
-  const userInfo = useSelector((state) => state.userInfo);
+  const [email, setEmail] = useState("wuyepabdul@gmail.com");
+  const [password, setPassword] = useState("123456");
 
-  //redirect if user is logged In
+  const userLogin = useSelector((state) => state.userLogin);
+  const { loading, error, userInfo } = userLogin;
+
   useEffect(() => {
-    if (userInfo !== null) {
+    if (userInfo) {
       history.push("/");
     }
-  }, [userInfo]);
+  }, [userInfo, history]);
 
-  //handle submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    try {
-      const result = await auth.signInWithEmailAndPassword(email, password);
-      const { user } = result;
-      const idTokenResult = await user.getIdTokenResult();
-      //dispatch login action
-      dispatch(createOrUpdateUser(idTokenResult.token, user.name));
-
-      history.push("/");
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-      setLoading(false);
+    const userData = { email, password };
+    dispatch(loginAction(userData));
+    if (intendedPage) {
+      history.push(intendedPage.from);
     }
   };
 
-  //handle login with Google
-  const handleLoginWithGoogle = async () => {
-    try {
-      const result = await auth.signInWithPopup(googleAuthProvider);
-      const { user } = result;
-      const idTokenResult = await user.getIdTokenResult();
-      //dispatch login action
-      dispatch(createOrUpdateUser(idTokenResult.token, user.name));
-
-      history.push("/");
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
-      setLoading(false);
-    }
-  };
-
-  const registerForm = () => (
+  const loginForm = () => (
     <form onSubmit={handleSubmit}>
       <div className="form-outline mt-4">
         <input
@@ -101,17 +73,11 @@ const Login = ({ history }) => {
     <div className="container p-5">
       <div className="row ">
         <div className="col-md-6 offset-md-3">
+          {error && errorMessage(error)}
+          {loading && loadingSpinner()}
           <h4 className="text-center">Login</h4>
-          {registerForm()}
-          <div className="d-grid gap-2 mt-4">
-            <button
-              onClick={handleLoginWithGoogle}
-              className="btn btn-danger"
-              role="button"
-            >
-              <i className="fab fa-google me-2"></i>Login with Google Account
-            </button>
-          </div>
+          {loginForm()}
+
           <div className="mt-2">
             Don't have an account ? <Link to="/register">Create one</Link>
           </div>

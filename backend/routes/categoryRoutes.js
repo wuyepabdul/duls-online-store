@@ -5,25 +5,23 @@ import {
   getCategory,
   updateCategory,
   deleteCategory,
+  getCategorySubs,
 } from "../controllers/categoryController.js";
 
 import { adminCheck, authCheck } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-//create a category route
-router.post("/category", authCheck, adminCheck, createCategory);
+router.post("/", authCheck, adminCheck, createCategory);
 
-//list a category route
-router.get("/categories", authCheck, adminCheck, listCategories);
+router.get("/", authCheck, adminCheck, listCategories);
 
-//get category by slug route
-router.get("/category/:slug", authCheck, adminCheck, getCategory);
+router.get("/sub/:id", getCategorySubs);
 
-//update a category route
-router.put("/category/:slug", authCheck, adminCheck, updateCategory);
+router.get("/:slug", getCategory);
 
-// delete a category route
-router.delete("/category/:slug", authCheck, adminCheck, deleteCategory);
+router.put("/:slug", authCheck, adminCheck, updateCategory);
+
+router.delete("/:slug", authCheck, adminCheck, deleteCategory);
 
 export default router;

@@ -1,29 +1,33 @@
 import Category from "../models/categoryModel.js";
 import slugify from "slugify";
+import asyncHandler from "express-async-handler";
+import SubCategory from "../models/subCategory.js";
+import Product from "../models/productModel.js";
 
-//create a category controller
-export const createCategory = async (req, res) => {
+export const createCategory = asyncHandler(async (req, res) => {
   try {
     const { name } = req.body;
-    const categoryExist = await Category.findOne({ name }).exec();
-    if (categoryExist) {
-      res.status(400).json({ message: "Category already exist" });
+    const categoryExist = await Category.findOne({ name });
+    const slugExist = await Category.findOne({ slug: slugify(name) });
+
+    if (categoryExist || slugExist) {
+      res.status(400).json("Category already exist");
     } else {
-      const category = await new Category({ name, slug: slugify(name) });
-      if (category) {
-        res
-          .status(201)
-          .json({ message: `${name} category created successfully` });
+      const savedCategory = await new Category({
+        name,
+        slug: slugify(name),
+      }).save();
+      if (savedCategory) {
+        res.json(`${name} category created successfully`);
       }
     }
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ message: "Server error, try again later" });
+    console.log(error);
+    res.status(500).json("Server error");
   }
-};
+});
 
-//list  categories controller
-export const listCategories = async (req, res) => {
+export const listCategories = asyncHandler(async (req, res) => {
   try {
     const allCategories = await Category.find({})
       .sort({ createdAt: -1 })
@@ -31,16 +35,19 @@ export const listCategories = async (req, res) => {
     res.json(allCategories);
   } catch (error) {
     console.log(error.message);
-    res.status(500).json({ message: "Server error, try again later" });
+    res.status(500).json("Server error, try again later");
   }
-};
+});
 
-//get category by slug controller
-export const getCategory = async (req, res) => {
+export const getCategory = asyncHandler(async (req, res) => {
   try {
-    const category = await Category.findOne({ slug: req.params.slug }).exec();
+    const category = await Category.findOne({ slug: req.params.slug });
+    const products = await Product.find({ category })
+      .populate("category")
+      .populate("postedBy", "_id name")
+      .exec();
     if (category) {
-      res.json(category);
+      res.json({ category, products });
     } else {
       res.status(404).json({ message: "Category not found" });
     }
@@ -48,18 +55,18 @@ export const getCategory = async (req, res) => {
     console.log(error.message);
     res.status(500).json({ message: "Server error, try again later" });
   }
-};
+});
 
-//update a category controller
-export const updateCategory = async (req, res) => {
+export const updateCategory = asyncHandler(async (req, res) => {
   try {
     const { name } = req.body;
-    // update category
+
     const updated = await Category.findOneAndUpdate(
       { slug: req.params.slug },
       { name: slugify(name) },
       { new: true }
-    );
+    ).exec();
+
     if (updated) {
       res.json(updated);
     } else {
@@ -69,10 +76,9 @@ export const updateCategory = async (req, res) => {
     console.log(error.message);
     res.status(500).json({ message: "Server error, try again later" });
   }
-};
+});
 
-//delete a category controller
-export const deleteCategory = async (req, res) => {
+export const deleteCategory = asyncHandler(async (req, res) => {
   try {
     const deleted = await Category.findOneAndDelete({
       slug: req.params.slug,
@@ -86,4 +92,18 @@ export const deleteCategory = async (req, res) => {
     console.log(error.message);
     res.status(500).json({ message: "Server error, try again later" });
   }
-};
+});
+
+export const getCategorySubs = asyncHandler(async (req, res) => {
+  try {
+    const subCategories = await SubCategory.find({ parent: req.params.id });
+    if (subCategories) {
+      res.json(subCategories);
+    } else {
+      res.status(400).json({ message: "Please Select a Category" });
+    }
+  } catch (error) {
+    console.log("message", error.message);
+    res.status(500).json({ message: error.message });
+  }
+});

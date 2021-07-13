@@ -1,25 +1,65 @@
+import axios from "axios";
 import {
+  USER_DETAILS_FAIL,
+  USER_DETAILS_REQUEST,
+  USER_DETAILS_RESET,
+  USER_DETAILS_SUCCESS,
+  USER_LIST_FAIL,
+  USER_LIST_REQUEST,
+  USER_LIST_RESET,
+  USER_LIST_SUCCESS,
   USER_LOGIN_FAIL,
   USER_LOGIN_REQUEST,
   USER_LOGIN_SUCCESS,
   USER_LOGOUT,
-  CREATE_OR_UPDATE_USER_REQUEST,
-  CREATE_OR_UPDATE_USER_SUCCESS,
-  CREATE_OR_UPDATE_USER_FAIL,
-  GET_CURRENT_USER_FAIL,
-  GET_CURRENT_USER_SUCCESS,
-  GET_CURRENT_USER_REQUEST,
-  GET_CURRENT_ADMIN_USER_FAIL,
-  GET_CURRENT_ADMIN_USER_REQUEST,
-  GET_CURRENT_ADMIN_USER_SUCCESS,
+  USER_REGISTER_FAIL,
+  USER_REGISTER_REQUEST,
+  USER_REGISTER_SUCCESS,
+  USER_UPDATE_PROFILE_FAIL,
+  USER_UPDATE_PROFILE_REQUEST,
+  USER_UPDATE_PROFILE_SUCCESS,
 } from "../constants/userConstants";
-import axios from "axios";
 
-// firebase user login action
-export const userLogin = (userData) => async (dispatch) => {
-  dispatch({ type: USER_LOGIN_REQUEST });
+export const registerAction = (userData) => async (dispatch) => {
   try {
-    dispatch({ type: USER_LOGIN_SUCCESS, payload: userData });
+    dispatch({ type: USER_REGISTER_REQUEST });
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const { data } = await axios.post("/api/auth/register", userData, config);
+    dispatch({ type: USER_REGISTER_SUCCESS, payload: data });
+    dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
+
+    localStorage.setItem("userInfo", JSON.stringify(data));
+  } catch (error) {
+    dispatch({
+      type: USER_REGISTER_FAIL,
+      payload:
+        error.response.data && error.response.data.message
+          ? error.response.data.message
+          : error.message,
+    });
+  }
+};
+
+export const loginAction = (userData) => async (dispatch) => {
+  try {
+    dispatch({ type: USER_LOGIN_REQUEST });
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const { data } = await axios.post("/api/auth/login", userData, config);
+
+    dispatch({ type: USER_LOGIN_SUCCESS, payload: data });
+    localStorage.setItem("userInfo", JSON.stringify(data));
   } catch (error) {
     console.log(error.message);
     dispatch({
@@ -32,35 +72,27 @@ export const userLogin = (userData) => async (dispatch) => {
   }
 };
 
-// create or update user
-export const createOrUpdateUser = (authtoken, name) => async (dispatch) => {
-  dispatch({ type: CREATE_OR_UPDATE_USER_REQUEST });
+export const getUserDetailsAction = () => async (dispatch, getState) => {
   try {
+    dispatch({ type: USER_DETAILS_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
     const config = {
       headers: {
-        authtoken,
+        Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.post(
-      `/api/auth/createOrUpdateUser`,
-      {},
-      config
-    );
-    const payloadData = {
-      name,
-      email: data.email,
-      token: authtoken,
-      role: data.role,
-      _id: data._id,
-    };
-    dispatch({ type: CREATE_OR_UPDATE_USER_SUCCESS, payload: payloadData });
-    //set local storage
 
-    localStorage.setItem("userInfo", JSON.stringify({ userInfo: payloadData }));
+    const { data } = await axios.get(`/api/staff/profile`, config);
+
+    dispatch({ type: USER_DETAILS_SUCCESS, payload: data });
   } catch (error) {
-    console.log(error.message);
+    console.log("getUserDetailsAction error", error.message);
     dispatch({
-      type: CREATE_OR_UPDATE_USER_FAIL,
+      type: USER_DETAILS_FAIL,
       payload:
         error.response.data && error.response.data.message
           ? error.response.data.message
@@ -69,25 +101,59 @@ export const createOrUpdateUser = (authtoken, name) => async (dispatch) => {
   }
 };
 
-// get current user action
-export const getCurrentUser = (authtoken) => async (dispatch) => {
-  dispatch({ type: GET_CURRENT_USER_REQUEST });
+export const updateUserProfileAction =
+  (userData) => async (dispatch, getState) => {
+    try {
+      dispatch({ type: USER_UPDATE_PROFILE_REQUEST });
+
+      const {
+        userLogin: { userInfo },
+      } = getState();
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${userInfo.token}`,
+        },
+      };
+
+      const { data } = await axios.put("/api/staff/profile", userData, config);
+
+      dispatch({ type: USER_UPDATE_PROFILE_SUCCESS, payload: data });
+      localStorage.setItem("userInfo", JSON.stringify(data));
+    } catch (error) {
+      console.log(error.message);
+      dispatch({
+        type: USER_UPDATE_PROFILE_FAIL,
+        payload:
+          error.response.data && error.response.data.message
+            ? error.response.data.message
+            : error.message,
+      });
+    }
+  };
+
+export const listUsersAction = () => async (dispatch, getState) => {
   try {
+    dispatch({ type: USER_LIST_REQUEST });
+
+    const {
+      userLogin: { userInfo },
+    } = getState();
+
     const config = {
       headers: {
-        authtoken,
+        Authorization: `Bearer ${userInfo.token}`,
       },
     };
-    const { data } = await axios.get(`/api/auth/currentUser`, config);
 
-    dispatch({ type: GET_CURRENT_USER_SUCCESS, payload: data });
-    //set local storage
-
-    // localStorage.setItem("userInfo", JSON.stringify({ userInfo: data }));
+    const { data } = await axios.get("/api/staff/list", config);
+    console.log("data", data);
+    dispatch({ type: USER_LIST_SUCCESS, payload: data });
   } catch (error) {
     console.log(error.message);
     dispatch({
-      type: GET_CURRENT_USER_FAIL,
+      type: USER_LIST_FAIL,
       payload:
         error.response.data && error.response.data.message
           ? error.response.data.message
@@ -96,36 +162,9 @@ export const getCurrentUser = (authtoken) => async (dispatch) => {
   }
 };
 
-// get current user action
-// create or update user
-export const getCurrentAdminUser = (authtoken) => async (dispatch) => {
-  dispatch({ type: GET_CURRENT_ADMIN_USER_REQUEST });
-  try {
-    const config = {
-      headers: {
-        authtoken,
-      },
-    };
-    const { data } = await axios.get(`/api/auth/currentAdminUser`, config);
-
-    dispatch({ type: GET_CURRENT_ADMIN_USER_SUCCESS, payload: data });
-    //set local storage
-
-    // localStorage.setItem("userInfo", JSON.stringify({ userInfo: data }));
-  } catch (error) {
-    console.log(error.message);
-    dispatch({
-      type: GET_CURRENT_ADMIN_USER_FAIL,
-      payload:
-        error.response.data && error.response.data.message
-          ? error.response.data.message
-          : error.message,
-    });
-  }
-};
-
-// user logout action
 export const logout = () => (dispatch) => {
-  dispatch({ type: USER_LOGOUT });
   localStorage.removeItem("userInfo");
+  dispatch({ type: USER_LOGOUT });
+  dispatch({ type: USER_DETAILS_RESET });
+  dispatch({ type: USER_LIST_RESET });
 };

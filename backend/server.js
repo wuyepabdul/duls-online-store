@@ -3,28 +3,28 @@ import morgan from "morgan";
 import dbConnection from "./config/dbConnection.js";
 import dotenv from "dotenv";
 import cors from "cors";
-import fs from "fs";
 
-// routes import
 import authRoutes from "./routes/authRoutes.js";
 import categoryRoutes from "./routes/categoryRoutes.js";
+import subCategoryRoutes from "./routes/subCategoryRoutes.js";
+import productRoutes from "./routes/productRoutes.js";
+import uploadRoutes from "./routes/cloudinaryRoutes.js";
 
 dotenv.config();
 
-//initialize express
 const app = express();
 
-// database connection
 dbConnection();
 
-//set up middlewares
-app.use(express.json({ limit: "4mb" }));
+app.use(express.json({ limit: "50mb" }));
 app.use(morgan("dev"));
-app.use(cors());
+// app.use(cors());
 
-//route middlewares
 app.use("/api/auth", authRoutes);
-app.use("/api", categoryRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/subCategory", subCategoryRoutes);
+app.use("/api/product", productRoutes);
+app.use("/api/upload", uploadRoutes);
 
 // root route
 app.get("/", (req, res) => {

@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from "react";
-import firebase from "firebase/app";
 import { NavLink, withRouter } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector, useStore } from "react-redux";
 import { logout } from "../../redux/actions/userActions";
 
 const Header = ({ history }) => {
   const dispatch = useDispatch();
 
-  const userInfo = useSelector((state) => state.userInfo);
+  const userLogin = useSelector((state) => state.userLogin);
+  const { userInfo } = userLogin;
 
+  const store = useSelector((state) => state);
   //logout handler
   const logoutHandler = async () => {
-    await firebase.auth().signOut();
     dispatch(logout());
-    history.push("/login");
   };
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <div className="container">
-        <NavLink className="navbar-brand" to="#">
+        <NavLink className="navbar-brand" to="/">
           Duls-Online-Shop
         </NavLink>
         <button
@@ -60,8 +59,6 @@ const Header = ({ history }) => {
                   </NavLink>
                 </li>{" "}
               </>
-            ) : userInfo.loading ? (
-              `${console.log("loading..")}`
             ) : (
               <>
                 <li className="nav-item">
@@ -74,15 +71,14 @@ const Header = ({ history }) => {
                       data-mdb-toggle="dropdown"
                       aria-expanded="false"
                     >
-                      {userInfo.userInfo.email &&
-                        userInfo.userInfo.email.split("@")[0]}
+                      {userInfo.email && userInfo.email.split("@")[0]}
                     </NavLink>
 
                     <ul
                       className="dropdown-menu"
                       aria-labelledby="dropdownMenuLink"
                     >
-                      {userInfo.userInfo.role === "admin" ? (
+                      {userInfo.role === "admin" ? (
                         <>
                           {" "}
                           <li>

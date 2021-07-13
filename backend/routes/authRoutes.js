@@ -1,20 +1,13 @@
 import express from "express";
 import {
-  createOrUpdateUser,
-  getCurrentAdminUser,
-  getCurrentUser,
+  signinController,
+  signupController,
 } from "../controllers/authController.js";
-import { adminCheck, authCheck } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-// create or update user
-router.post("/createOrUpdateUser", authCheck, createOrUpdateUser);
+router.post("/login", signinController);
 
-// get current user
-router.get("/currentUser", authCheck, getCurrentUser);
-
-// get current admin user
-router.get("/currentAdminUser", authCheck, adminCheck, getCurrentAdminUser);
+router.post("/register", signupController);
 
 export default router;

@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { auth } from "../../firebase";
 import { loadingButton } from "../../helpers/loading";
 
 const ForgotPassword = ({ history }) => {
-  const dispatch = useDispatch();
-  //component state
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +17,7 @@ const ForgotPassword = ({ history }) => {
       history.push("/");
     }
   }, [userInfo]);
-  //handle submit
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -29,11 +27,11 @@ const ForgotPassword = ({ history }) => {
         url: process.env.REACT_APP_FORGOT_PASSWORD_REDIRECT_URL,
         handleCodeInApp: true,
       };
-      //send password reset link
+
       await auth.sendPasswordResetEmail(email, config);
       setLoading(false);
       setEmail("");
-      //notify user
+
       toast.success("Check your email for password reset link");
     } catch (error) {
       console.log(error);
