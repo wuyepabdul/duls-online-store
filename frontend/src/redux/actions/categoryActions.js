@@ -24,14 +24,9 @@ export const fetchAllCategoriesAction = () => async (dispatch, getState) => {
   try {
     dispatch({ type: GET_ALL_CATEGORIES_REQUEST });
 
-    const {
-      userLogin: { userInfo },
-    } = getState();
-
     const config = {
       headers: {
         "Content-Type": "application/json",
-        authorization: `Bearer ${userInfo.token}`,
       },
     };
 

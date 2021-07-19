@@ -14,7 +14,7 @@ const router = express.Router();
 
 router.post("/", authCheck, adminCheck, createCategory);
 
-router.get("/", authCheck, adminCheck, listCategories);
+router.get("/", listCategories);
 
 router.get("/sub/:id", getCategorySubs);
 
