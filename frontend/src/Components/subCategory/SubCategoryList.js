@@ -1,17 +1,17 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllCategoriesAction } from "../../redux/actions/categoryActions";
 import { loadingSpinner } from "../../helpers/loading";
+import { fetchAllSub } from "../../redux/actions/subCategoryActions";
 
-const CategoriesList = () => {
+const SubCategoryList = () => {
   const dispatch = useDispatch();
 
-  const getAllCategories = useSelector((state) => state.getAllCategories);
-  const { loading, error, categories } = getAllCategories;
+  const getAllSubCategories = useSelector((state) => state.getAllSubCategories);
+  const { loading, error, subCategories } = getAllSubCategories;
 
   useEffect(() => {
-    dispatch(fetchAllCategoriesAction());
+    dispatch(fetchAllSub());
   }, [dispatch]);
 
   return (
@@ -19,12 +19,14 @@ const CategoriesList = () => {
       <div className="row">
         {loading
           ? loadingSpinner()
-          : categories.map((category) => (
+          : subCategories.map((subCategory) => (
               <div
-                key={category._id}
+                key={subCategory._id}
                 className="col btn btn-outlined-primary btn-lg btn-block m-3"
               >
-                <Link to={`/category/${category.slug}`}>{category.name}</Link>
+                <Link to={`/subCategory/${subCategory.slug}`}>
+                  {subCategory.name}
+                </Link>
               </div>
             ))}
       </div>
@@ -32,4 +34,4 @@ const CategoriesList = () => {
   );
 };
 
-export default CategoriesList;
+export default SubCategoryList;

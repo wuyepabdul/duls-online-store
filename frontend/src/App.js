@@ -23,11 +23,13 @@ import AllProducts from "./Pages/admin/product/AllProducts";
 import Footer from "./Components/footer/Footer";
 import Product from "./Pages/Product";
 import CategoryHome from "./Pages/category/CategoryHome";
+import SubCategoryHome from "./Pages/subCategory/SubCategoryHome";
+import Shop from "./Pages/Shop";
 
 const App = () => {
   return (
     <div>
-      <div className="vh-80">
+      <div className="main-container">
         <Header />
         <ToastContainer
           position="top-center"
@@ -43,10 +45,12 @@ const App = () => {
 
         <Switch>
           <Route exact path="/" component={Home} />
+          <Route exact path="/shop" component={Shop} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={RegisterScreen} />
           <Route exact path="/forgotPassword" component={ForgotPassword} />
           <Route exact path="/category/:slug" component={CategoryHome} />
+          <Route exact path="/subCategory/:slug" component={SubCategoryHome} />
           <Route exact path="/product/:slug" component={Product} />
           <UserRoute exact path="/user/history" component={UserHistory} />
           <UserRoute exact path="/user/password" component={UserPassword} />

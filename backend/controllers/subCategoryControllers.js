@@ -1,4 +1,5 @@
 import slugify from "slugify";
+import Product from "../models/productModel.js";
 import SubCategory from "../models/subCategory.js";
 
 export const createSubCategory = async (req, res) => {
@@ -39,9 +40,12 @@ export const listSubCategories = async (req, res) => {
 export const getSubCategory = async (req, res) => {
   try {
     const subCategory = await SubCategory.findOne({ slug: req.params.slug });
+    const products = await Product.find({ subCategories: subCategory })
+      .populate("category")
+      .exec();
 
     if (subCategory) {
-      res.json(subCategory);
+      res.json({ subCategory, products });
     } else {
       res.status(404).json({ message: "Sub Category not found" });
     }

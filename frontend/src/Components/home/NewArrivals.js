@@ -8,6 +8,7 @@ import { errorMessage } from "../../helpers/message";
 import LoadingCard from "../cards/LoadingCard";
 import ProductCard from "../cards/ProductCard";
 import { Pagination } from "antd";
+import { VStack, Wrap } from "@chakra-ui/react";
 
 const NewArrivals = () => {
   const dispatch = useDispatch();
@@ -36,36 +37,29 @@ const NewArrivals = () => {
   };
   return (
     <>
-      <div className="container">
-        <div className="row">
-          {loading || totalProductsLoading ? (
-            <LoadingCard count={4} />
+      <VStack>
+        <Wrap spacing="30px" justify="center">
+          {loading ? (
+            <LoadingCard count={3} />
           ) : error ? (
             errorMessage(error)
           ) : (
+            products &&
             products.map((product) => (
-              <div
-                key={product._id}
-                className="col-xsm-12 col-sm-6 col-md-3 col-lg-3 mt-3"
-              >
-                <ProductCard product={product} />{" "}
-              </div>
+              <ProductCard key={product._id} product={product} />
             ))
           )}
-
-          {totalProducts && (
-            <div className="row">
-              <div className="col-md-4 offset-md-4 text-center pt-5 p-3">
-                <Pagination
-                  defaultCurrent={page}
-                  total={(totalProducts / 4) * 10}
-                  onChange={(value) => setPage(value)}
-                />
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+        </Wrap>{" "}
+        {totalProductsLoading ? (
+          ""
+        ) : (
+          <Pagination
+            defaultCurrent={page}
+            total={(totalProducts / 4) * 10}
+            onChange={(value) => setPage(value)}
+          />
+        )}
+      </VStack>
     </>
   );
 };

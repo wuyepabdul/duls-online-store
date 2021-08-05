@@ -17,21 +17,11 @@ import {
   UPDATE_SUB_CATEGORY_SUCCESS,
 } from "../constants/subCategoryConstants";
 
-export const fetchAllSub = () => async (dispatch, getState) => {
+export const fetchAllSub = () => async (dispatch) => {
   try {
     dispatch({ type: GET_ALL_SUB_CATEGORIES_REQUEST });
 
-    const {
-      userLogin: { userInfo },
-    } = getState();
-
-    const config = {
-      headers: {
-        authorization: `Bearer ${userInfo.token}`,
-      },
-    };
-
-    const { data } = await axios.get("/api/subCategory", config);
+    const { data } = await axios.get("/api/subCategory");
     dispatch({ type: GET_ALL_SUB_CATEGORIES_SUCCESS, payload: data });
   } catch (error) {
     console.log(error.message);

@@ -13,7 +13,7 @@ const router = express.Router();
 
 router.post("/", authCheck, adminCheck, createSubCategory);
 
-router.get("/", authCheck, listSubCategories);
+router.get("/", listSubCategories);
 
 router.get("/:slug", getSubCategory);
 

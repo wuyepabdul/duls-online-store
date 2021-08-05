@@ -204,3 +204,26 @@ export const listRelatedProducts = asyncHandler(async (req, res) => {
     res.json(500).json({ message: "Unexpected Error" });
   }
 });
+
+const handleQuery = async (req, res, query) => {
+  const products = await Product.find({ $text: query })
+    .populate("category", "_id name")
+    .populate("subCategories", "_id name")
+    .populate("postedBy", "_id name")
+    .exec();
+
+  res.json(products);
+};
+
+export const searchFilters = asyncHandler(async (req, res) => {
+  try {
+    const { query } = req.body;
+    if (query) {
+      console.log("query", query);
+      await handleQuery(req, res, query);
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.json(500).json({ message: "Unexpected Error" });
+  }
+});

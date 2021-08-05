@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { NavLink, withRouter } from "react-router-dom";
-import { useDispatch, useSelector, useStore } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/actions/userActions";
+import Search from "../forms/Search";
 
 const Header = ({ history }) => {
   const dispatch = useDispatch();
@@ -9,8 +10,6 @@ const Header = ({ history }) => {
   const userLogin = useSelector((state) => state.userLogin);
   const { userInfo } = userLogin;
 
-  const store = useSelector((state) => state);
-  //logout handler
   const logoutHandler = async () => {
     dispatch(logout());
   };
@@ -39,8 +38,13 @@ const Header = ({ history }) => {
                 Home
               </NavLink>
             </li>
+            <li className="nav-item">
+              <NavLink className="nav-link" aria-current="page" to="/shop">
+                Shop
+              </NavLink>
+            </li>
           </ul>
-
+          {/* <Search /> */}
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             {!userInfo ? (
               <>

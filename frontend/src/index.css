@@ -10,6 +10,10 @@ body {
   object-fit: cover;
 }
 
+.main-container {
+  height: 80vh;
+}
+
 .thumbs img {
   height: 60px;
   object-fit: cover;

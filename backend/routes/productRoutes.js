@@ -10,6 +10,7 @@ import {
   listNewArrivals,
   rateProduct,
   listRelatedProducts,
+  searchFilters,
 } from "../controllers/productControllers.js";
 
 import { adminCheck, authCheck } from "../middlewares/authMiddleware.js";
@@ -19,6 +20,8 @@ const router = express.Router();
 router.post("/", authCheck, adminCheck, createProduct);
 
 router.post("/list", listProducts);
+
+router.post("/searchfilters", searchFilters);
 
 router.post("/newarrivals", listNewArrivals);
 
