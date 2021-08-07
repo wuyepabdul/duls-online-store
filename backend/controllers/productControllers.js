@@ -206,12 +206,13 @@ export const listRelatedProducts = asyncHandler(async (req, res) => {
 });
 
 const handleQuery = async (req, res, query) => {
-  const products = await Product.find({ $text: query })
+  const products = await Product.find({ $text: { $search: query } })
     .populate("category", "_id name")
     .populate("subCategories", "_id name")
     .populate("postedBy", "_id name")
     .exec();
 
+  console.log("products", products);
   res.json(products);
 };
 

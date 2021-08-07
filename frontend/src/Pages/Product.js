@@ -72,39 +72,43 @@ const Product = ({ match }) => {
   };
   return (
     <div className="container-fluid">
-      <div>Products</div>
-      <div className="row pt-4">
-        {!product ? (
-          loadingSpinner()
-        ) : error ? (
-          errorMessage(error)
-        ) : (
-          <SingleProduct
-            product={product}
-            onRatingStarClicked={onRatingStarClicked}
-            star={star}
-          />
-        )}
-      </div>
-      <div className="row ">
-        <div className="col text-center pt-5 pb-5">
-          <hr />
-          <h4>Related Products</h4>
-          <hr />
-        </div>
-      </div>
-      <div className="row center-items">
-        {relatedProducts && relatedProducts.length ? (
-          relatedProducts.map((product) => (
-            <div key={product._id} className="col-md-4 col-sm-6 col-xs-12">
-              {console.log("product", product)}
-              {<ProductCard product={product} />}{" "}
+      {!product ? (
+        loadingSpinner()
+      ) : (
+        <>
+          <div>Products</div>
+          <div className="row pt-4">
+            {error ? (
+              errorMessage(error)
+            ) : (
+              <SingleProduct
+                product={product}
+                onRatingStarClicked={onRatingStarClicked}
+                star={star}
+              />
+            )}
+          </div>
+          <div className="row ">
+            <div className="col text-center pt-5 pb-5">
+              <hr />
+              <h4>Related Products</h4>
+              <hr />
             </div>
-          ))
-        ) : (
-          <div className="text-center display-6"> No Related Products </div>
-        )}
-      </div>
+          </div>
+          <div className="row center-items">
+            {relatedProducts && relatedProducts.length ? (
+              relatedProducts.map((product) => (
+                <div key={product._id} className="col-md-4 col-sm-6 col-xs-12">
+                  {console.log("product", product)}
+                  {<ProductCard product={product} />}{" "}
+                </div>
+              ))
+            ) : (
+              <div className="text-center display-6"> No Related Products </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };

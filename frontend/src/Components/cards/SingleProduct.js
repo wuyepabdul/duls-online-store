@@ -1,6 +1,5 @@
 import React from "react";
 import { HeartOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
 import { Carousel } from "react-responsive-carousel";
 import defaultImage from "../../images/laptop.jpg";
@@ -47,10 +46,10 @@ const SingleProduct = ({ product, onRatingStarClicked, star }) => {
               <ShoppingCartOutlined className="text-success" /> <br /> Add to
               Cart
             </>,
-            <Link to="#">
+            <>
               {" "}
               <HeartOutlined className="text-info" /> <br /> Add to Wishlist
-            </Link>,
+            </>,
             <RatingModal>
               <StarRating
                 name={product._id}

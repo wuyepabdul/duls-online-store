@@ -38,12 +38,16 @@ import {
   imageDeleteReducer,
   imageUploadReducer,
 } from "./reducers/uploadReducer";
-import { searchQueryReducer } from "./reducers/searchReducers";
+import {
+  getSearchReducer,
+  searchQueryReducer,
+} from "./reducers/searchReducers";
 
 const reducers = combineReducers({
   userLogin: userLoginReducer,
   userRegister: userRegisterReducer,
   searchQuery: searchQueryReducer,
+  getSearch: getSearchReducer,
   productsGetTotal: productsGetTotalReducer,
   productsGetAll: productsGetAllReducer,
   productsGetNew: productsGetNewReducer,

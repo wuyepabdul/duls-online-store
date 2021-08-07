@@ -4,7 +4,7 @@ import laptop from "../../images/laptop.jpg";
 import { EyeOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { Card } from "antd";
 import showAverageRating from "../../functions/averageRating";
-import { Wrap, WrapItem, Center, VStack } from "@chakra-ui/react";
+import { Center, VStack } from "@chakra-ui/react";
 
 const { Meta } = Card;
 const ProductCard = ({ product }) => {
@@ -21,16 +21,18 @@ const ProductCard = ({ product }) => {
           hoverable
           style={{ width: 240, objectFit: "cover" }}
           cover={
-            <img
-              alt="product"
-              style={{ height: 200 }}
-              src={
-                product.images && product.images.length
-                  ? product.images[0].url
-                  : laptop
-              }
-              className="image-fit p-2"
-            />
+            <Link to={`/product/${product.slug}`}>
+              <img
+                alt="product"
+                style={{ height: 200 }}
+                src={
+                  product.images && product.images.length
+                    ? product.images[0].url
+                    : laptop
+                }
+                className="image-fit p-2"
+              />
+            </Link>
           }
           actions={[
             <Link to={`/product/${product.slug}`}>

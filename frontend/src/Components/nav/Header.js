@@ -44,7 +44,7 @@ const Header = ({ history }) => {
               </NavLink>
             </li>
           </ul>
-          {/* <Search /> */}
+          <Search />
           <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
             {!userInfo ? (
               <>
