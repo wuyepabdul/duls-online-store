@@ -45,7 +45,14 @@ const ProductCard = ({ product }) => {
             </>,
           ]}
         >
-          <Meta title={product.title} description={product.description} />
+          <Meta
+            title={
+              <span>
+                {product.title} - &#8358;{product.price}
+              </span>
+            }
+            description={product.description}
+          />
         </Card>
       </Center>
     </VStack>

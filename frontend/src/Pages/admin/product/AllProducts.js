@@ -10,17 +10,16 @@ import {
   getAllProducts,
 } from "../../../redux/actions/productActions";
 import { Modal, Button, Row, Col, Divider } from "antd";
+import { Wrap, WrapItem, Center, GridItem, Grid, Text } from "@chakra-ui/react";
 
 const confirm = Modal.confirm;
 
 const AllProducts = () => {
   const dispatch = useDispatch();
 
-  // get all products from store
   const productsGetAll = useSelector((state) => state.productsGetAll);
   const { error, loading, products } = productsGetAll;
 
-  // delete product from store
   const productDelete = useSelector((state) => state.productDelete);
   const {
     error: deleteError,
@@ -28,12 +27,10 @@ const AllProducts = () => {
     product: deletedProduct,
   } = productDelete;
 
-  // on component mount
   useEffect(() => {
     dispatch(getAllProducts(10));
   }, [dispatch, deleteSuccess]);
 
-  //handle delete
   const handleDelete = (slug) => {
     confirm({
       title: "Are you sure to delete product?",
@@ -54,32 +51,42 @@ const AllProducts = () => {
   };
   return (
     <div className="container-fluid">
-      <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-        <Col className="gutter-row" span={6}>
+      <Grid templateColumns="repeat(5, 1fr)" gap={3}>
+        <GridItem
+          className="pt-3 pb-3"
+          rowSpan={2}
+          colSpan={1}
+          bg="#f5f5f4"
+          style={{ height: "100%" }}
+        >
           <AdminNav />
-        </Col>
-        <Col className="gutter-row" span={10}>
-          <h2>All Products</h2>
-          <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-            {loading
-              ? loadingSpinner()
-              : error
-              ? errorMessage(error)
-              : !products.length
-              ? errorMessage("No Products Available")
-              : products.map((product) => (
-                  <Col key={product._id} className="gutter-row" span={6}>
-                    {" "}
-                    <AdminProductsCard
-                      key={product._id}
-                      product={product}
-                      handleDelete={handleDelete}
-                    />{" "}
-                  </Col>
-                ))}
-          </Row>
-        </Col>
-      </Row>
+        </GridItem>
+        <GridItem colSpan={4}>
+          <Wrap
+            className="pt-3 pb-3"
+            spacing="30px"
+            justify="center"
+            align="center"
+          >
+            {error && errorMessage(error)}
+            {!products ? (
+              loadingSpinner()
+            ) : products && products.length > 0 ? (
+              products.map((product) => (
+                <WrapItem key={product._id}>
+                  <AdminProductsCard
+                    key={product._id}
+                    product={product}
+                    handleDelete={handleDelete}
+                  />
+                </WrapItem>
+              ))
+            ) : (
+              <Text fontSize="5xl">No Products</Text>
+            )}
+          </Wrap>
+        </GridItem>
+      </Grid>
     </div>
   );
 };

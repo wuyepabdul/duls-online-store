@@ -48,7 +48,7 @@ const Product = ({ match }) => {
       toast.error(ratingError);
       dispatch({ type: RATE_PRODUCT_RESET });
     }
-  }, [ratingSuccess, ratingError, dispatch]);
+  }, [ratingSuccess, ratingError, dispatch, slug]);
 
   useEffect(() => {
     if (product) dispatch(listRelatedProductsAction(product._id));

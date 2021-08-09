@@ -2,6 +2,11 @@ import slugify from "slugify";
 import asyncHandler from "express-async-handler";
 import Product from "../models/productModel.js";
 import User from "../models/userModel.js";
+import {
+  handleCategory,
+  handlePrice,
+  handleQuery,
+} from "../functions/searchFilters.js";
 
 export const createProduct = asyncHandler(async (req, res) => {
   try {
@@ -205,23 +210,18 @@ export const listRelatedProducts = asyncHandler(async (req, res) => {
   }
 });
 
-const handleQuery = async (req, res, query) => {
-  const products = await Product.find({ $text: { $search: query } })
-    .populate("category", "_id name")
-    .populate("subCategories", "_id name")
-    .populate("postedBy", "_id name")
-    .exec();
-
-  console.log("products", products);
-  res.json(products);
-};
-
 export const searchFilters = asyncHandler(async (req, res) => {
   try {
-    const { query } = req.body;
+    const { query, price, category } = req.body;
     if (query) {
-      console.log("query", query);
       await handleQuery(req, res, query);
+    }
+    if (price !== undefined) {
+      await handlePrice(req, res, price);
+    }
+
+    if (category) {
+      await handleCategory(req, res, category);
     }
   } catch (error) {
     console.log(error.message);
