@@ -52,7 +52,21 @@ export const handleSubCategory = async (req, res, subCategory) => {
       .populate("postedBy", "_id name")
       .exec();
 
-    console.log("subcategory", products);
+    res.json(products);
+  } catch (error) {
+    console.log(error.message);
+    res.json(500).json({ message: "Unexpected Error" });
+  }
+};
+
+export const handleShipping = async (req, res, shipping) => {
+  try {
+    let products = await Product.find({ shipping })
+      .populate("category", "_id name")
+      .populate("subCategories", "_id name")
+      .populate("postedBy", "_id name")
+      .exec();
+
     res.json(products);
   } catch (error) {
     console.log(error.message);

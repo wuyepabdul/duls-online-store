@@ -6,6 +6,7 @@ import {
   handleCategory,
   handlePrice,
   handleQuery,
+  handleShipping,
   handleSubCategory,
 } from "../functions/searchFilters.js";
 
@@ -213,7 +214,7 @@ export const listRelatedProducts = asyncHandler(async (req, res) => {
 
 export const searchFilters = asyncHandler(async (req, res) => {
   try {
-    const { query, price, category, subCategory } = req.body;
+    const { query, price, category, subCategory, shipping } = req.body;
     if (query) {
       await handleQuery(req, res, query);
     }
@@ -227,6 +228,10 @@ export const searchFilters = asyncHandler(async (req, res) => {
 
     if (subCategory) {
       await handleSubCategory(req, res, subCategory);
+    }
+
+    if (shipping) {
+      await handleShipping(req, res, shipping);
     }
   } catch (error) {
     console.log(error.message);
