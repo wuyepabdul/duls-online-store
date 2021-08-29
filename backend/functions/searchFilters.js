@@ -37,7 +37,22 @@ export const handleCategory = async (req, res, category) => {
       .populate("postedBy", "_id name")
       .exec();
 
-    console.log("catgory", products);
+    res.json(products);
+  } catch (error) {
+    console.log(error.message);
+    res.json(500).json({ message: "Unexpected Error" });
+  }
+};
+
+export const handleSubCategory = async (req, res, subCategory) => {
+  try {
+    let products = await Product.find({ subCategories: subCategory })
+      .populate("category", "_id name")
+      .populate("subCategories", "_id name")
+      .populate("postedBy", "_id name")
+      .exec();
+
+    console.log("subcategory", products);
     res.json(products);
   } catch (error) {
     console.log(error.message);
