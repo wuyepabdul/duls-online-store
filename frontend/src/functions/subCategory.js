@@ -1,25 +1,16 @@
 import axios from "axios";
 
-export const fetchAllSub = (token) => {
+export const fetchAllSub = async () => {
   try {
-    //headers
-    const config = {
-      headers: {
-        authorization: `Bearer ${token}`,
-      },
-    };
-    // send api call
-    const { data } = await axios.get("/api/subCategory", config);
+    const { data } = await axios.get("/api/subCategory");
     return data;
   } catch (error) {
     console.log(error.message);
   }
 };
 
-//get a single category action
-export const fetchSubBySlug = (slug) => {
+export const fetchSubBySlug = async (slug) => {
   try {
-    // send api call
     const { data } = await axios.get(`/api/subCategory/${slug}`);
     return data;
   } catch (error) {
@@ -27,18 +18,16 @@ export const fetchSubBySlug = (slug) => {
   }
 };
 
-//create a category action
 export const createSubCategory =
   (formData, token) => async (dispatch, getState) => {
     try {
-      //headers
       const config = {
         headers: {
           "Content-Type": "application/json",
           authorization: `Bearer ${token}`,
         },
       };
-      // send api call
+
       const { data } = await axios.post(`/api/subCategory`, formData, config);
       return data;
     } catch (error) {
@@ -46,17 +35,15 @@ export const createSubCategory =
     }
   };
 
-// update a sub category
-export const updateSubCategory = (slug, updatedData, token) => {
+export const updateSubCategory = async (slug, updatedData, token) => {
   try {
-    //headers
     const config = {
       headers: {
         "Content-Type": "application/json",
         authorization: `Bearer ${token}`,
       },
     };
-    // send api call
+
     const { data } = await axios.put(
       `/api/subCategory/${slug}`,
       updatedData,
@@ -68,17 +55,15 @@ export const updateSubCategory = (slug, updatedData, token) => {
   }
 };
 
-// delete a subcategory
-export const deleteSubCategory = (slug, token) => {
+export const deleteSubCategory = async (slug, token) => {
   try {
-    //headers
     const config = {
       headers: {
         "Content-Type": "application/json",
         authorization: `Bearer ${token}`,
       },
     };
-    // send api call
+
     const { data } = await axios.delete(`/api/subCategory/${slug}`, config);
     return data;
   } catch (error) {

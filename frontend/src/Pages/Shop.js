@@ -1,6 +1,14 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Wrap, WrapItem, Center, GridItem, Grid, Text } from "@chakra-ui/react";
+import {
+  Wrap,
+  WrapItem,
+  Center,
+  GridItem,
+  Grid,
+  Text,
+  Badge,
+} from "@chakra-ui/react";
 import ProductCard from "../Components/cards/ProductCard";
 import { loadingSpinner } from "../helpers/loading";
 import { errorMessage } from "../helpers/message";
@@ -13,6 +21,7 @@ import { Menu, Slider, Checkbox } from "antd";
 import { SEARCH_QUERY } from "../redux/constants/searchConstants";
 import { fetchAllCategories } from "../functions/category";
 import { DownSquareOutlined } from "@ant-design/icons";
+import { fetchAllSub } from "../functions/subCategory";
 
 const { SubMenu, ItemGroup } = Menu;
 
@@ -20,6 +29,8 @@ const Shop = () => {
   const dispatch = useDispatch();
   const [price, setPrice] = useState([0, 0]);
   const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+  const [sub, setSub] = useState("");
   const [categoryIds, setCategoryIds] = useState([]);
   const [ok, setOk] = useState(false);
   const [products, setProducts] = useState(null);
@@ -30,13 +41,9 @@ const Shop = () => {
 
   useEffect(() => {
     loadAllProducts();
-    fetchAllCategories()
-      .then((data) => {
-        console.log("data", data);
-        setCategories(data);
-      })
-      .catch((error) => console.log(error));
-  }, []);
+    loadFetchedSubCategories();
+    loadFetchedCategories();
+  }, [dispatch]);
 
   const loadAllProducts = () => {
     listAllProductsByCount(12)
@@ -47,6 +54,24 @@ const Shop = () => {
         console.log("error", err);
         setError(err.message);
       });
+  };
+
+  const loadFetchedCategories = () => {
+    fetchAllCategories()
+      .then((data) => {
+        console.log("data", data);
+        setCategories(data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const loadFetchedSubCategories = () => {
+    fetchAllSub()
+      .then((data) => {
+        console.log("sub categories", data);
+        setSubCategories(data);
+      })
+      .catch((error) => console.log("subCategory error", error));
   };
 
   const fetchSearchedProducts = (query) => {
@@ -77,6 +102,7 @@ const Shop = () => {
     dispatch({ type: SEARCH_QUERY, payload: { text: "" } });
     setPrice(value);
     setCategoryIds([]);
+    setSub("");
     setTimeout(() => {
       setOk(!ok);
     }, 300);
@@ -101,7 +127,7 @@ const Shop = () => {
   const onCheckChange = (e) => {
     dispatch({ type: SEARCH_QUERY, payload: { text: "" } });
     setPrice([0, 0]);
-
+    setSub("");
     let searchQueryInState = [...categoryIds];
     let justChecked = e.target.value;
     let categoryInState = searchQueryInState.indexOf(justChecked);
@@ -114,8 +140,34 @@ const Shop = () => {
     setCategoryIds(searchQueryInState);
     fetchSearchedProducts({ category: searchQueryInState });
   };
+
+  const showSubCategories = () =>
+    subCategories.length &&
+    subCategories.map((sub) => (
+      <Badge
+        key={sub._id}
+        variant="solid"
+        className="px-2 py-2 mx-2 my-2 "
+        onClick={() => handleSubCategory(sub)}
+        style={{ cursor: "pointer" }}
+      >
+        {" "}
+        {sub.name}{" "}
+      </Badge>
+    ));
+
+  const handleSubCategory = (subCategory) => {
+    setSub(subCategory);
+    dispatch({ type: SEARCH_QUERY, payload: { text: "" } });
+    setPrice([0, 0]);
+    setCategories([]);
+
+    fetchSearchedProducts({ subCategory });
+  };
+
   return (
     <>
+      {console.log("subs", subCategories)}
       <Grid templateColumns="repeat(5, 1fr)" gap={3}>
         <GridItem className="pt-3 pb-3" rowSpan={2} colSpan={1} bg="#f5f5f4">
           {" "}
@@ -124,6 +176,7 @@ const Shop = () => {
             <h4>Search/Filter</h4>
           </Center>
           <Menu defaultOpenKeys={["1", "2", "3", "4", "5"]} mode="inline">
+            {/* slider */}
             <SubMenu key="1" title={<span className="h6">&#8358; Price</span>}>
               <div style={{ paddingLeft: "1.5rem" }}>
                 <Slider
@@ -137,6 +190,8 @@ const Shop = () => {
                 />
               </div>
             </SubMenu>
+
+            {/* categories */}
             <SubMenu
               key="2"
               title={
@@ -146,6 +201,18 @@ const Shop = () => {
               }
             >
               {showCategories()}
+            </SubMenu>
+
+            {/* subcategories */}
+            <SubMenu
+              key="3"
+              title={
+                <div className="pl-4 pr-4" style={{ paddingLeft: "0rem" }}>
+                  <DownSquareOutlined /> SubCategories
+                </div>
+              }
+            >
+              {showSubCategories()}
             </SubMenu>
           </Menu>
         </GridItem>
