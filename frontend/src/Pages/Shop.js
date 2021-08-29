@@ -28,6 +28,7 @@ const { SubMenu, ItemGroup } = Menu;
 const Shop = () => {
   const dispatch = useDispatch();
   const [price, setPrice] = useState([0, 0]);
+  const [shipping, setShipping] = useState("");
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [sub, setSub] = useState("");
@@ -94,13 +95,13 @@ const Shop = () => {
   }, [text]);
 
   useEffect(() => {
-    console.log("ok");
     fetchSearchedProducts({ price });
   }, [ok]);
 
   const handleSlider = (value) => {
     dispatch({ type: SEARCH_QUERY, payload: { text: "" } });
     setPrice(value);
+    setShipping("");
     setCategoryIds([]);
     setSub("");
     setTimeout(() => {
@@ -127,6 +128,7 @@ const Shop = () => {
   const onCheckChange = (e) => {
     dispatch({ type: SEARCH_QUERY, payload: { text: "" } });
     setPrice([0, 0]);
+    setShipping("");
     setSub("");
     let searchQueryInState = [...categoryIds];
     let justChecked = e.target.value;
@@ -147,7 +149,7 @@ const Shop = () => {
       <Badge
         key={sub._id}
         variant="solid"
-        className="px-2 py-2 mx-2 my-2 "
+        className="p-2 ml-4 m-2"
         onClick={() => handleSubCategory(sub)}
         style={{ cursor: "pointer" }}
       >
@@ -161,13 +163,46 @@ const Shop = () => {
     dispatch({ type: SEARCH_QUERY, payload: { text: "" } });
     setPrice([0, 0]);
     setCategories([]);
+    setShipping("");
 
     fetchSearchedProducts({ subCategory });
   };
 
+  const showShipping = () => (
+    <>
+      <Checkbox
+        className="p-2  pr-4"
+        style={{ marginLeft: "1rem" }}
+        onChange={onShippingChange}
+        value="Yes"
+        checked={shipping === "Yes"}
+      >
+        {" "}
+        Yes
+      </Checkbox>
+
+      <Checkbox
+        className="pb-2 pl-4 pr-4"
+        onChange={onShippingChange}
+        value="No"
+        checked={shipping === "No"}
+      >
+        {" "}
+        No
+      </Checkbox>
+    </>
+  );
+
+  const onShippingChange = (e) => {
+    setSub("");
+    dispatch({ type: SEARCH_QUERY, payload: { text: "" } });
+    setPrice([0, 0]);
+    setCategories([]);
+    setShipping(e.target.value);
+    fetchSearchedProducts({ shipping: e.target.value });
+  };
   return (
     <>
-      {console.log("subs", subCategories)}
       <Grid templateColumns="repeat(5, 1fr)" gap={3}>
         <GridItem className="pt-3 pb-3" rowSpan={2} colSpan={1} bg="#f5f5f4">
           {" "}
@@ -175,7 +210,7 @@ const Shop = () => {
             {" "}
             <h4>Search/Filter</h4>
           </Center>
-          <Menu defaultOpenKeys={["1", "2", "3", "4", "5"]} mode="inline">
+          <Menu defaultOpenKeys={["1", "2", "3", "4"]} mode="inline">
             {/* slider */}
             <SubMenu key="1" title={<span className="h6">&#8358; Price</span>}>
               <div style={{ paddingLeft: "1.5rem" }}>
@@ -213,6 +248,18 @@ const Shop = () => {
               }
             >
               {showSubCategories()}
+            </SubMenu>
+
+            {/* shipping */}
+            <SubMenu
+              key="4"
+              title={
+                <div className="pl-4 pr-4" style={{ paddingLeft: "0rem" }}>
+                  <DownSquareOutlined /> Shipping
+                </div>
+              }
+            >
+              {showShipping()}
             </SubMenu>
           </Menu>
         </GridItem>
